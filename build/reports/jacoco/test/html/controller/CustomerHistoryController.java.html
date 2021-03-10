@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerHistoryController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">controller</a> &gt; <span class="el_source">CustomerHistoryController.java</span></div><h1>CustomerHistoryController.java</h1><pre class="source lang-java linenums">package controller;
+
+import Application.App;
+import entity.Commodity;
+import entity.Order;
+import entity.Transaction;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import service.CommodityService;
+import service.OrderService;
+import service.TransactionService;
+import util.UserSession;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L23">public class CustomerHistoryController {</span>
+
+<span class="nc" id="L25">    private List&lt;CustomerController.CartRow&gt; historyRows = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L26">    private OrderService orderService = new OrderService();</span>
+<span class="nc" id="L27">    private TransactionService transactionService = new TransactionService();</span>
+<span class="nc" id="L28">    private CommodityService commodityService = new CommodityService();</span>
+
+    @FXML
+    private Label historyWelcomeLabel;
+
+    @FXML
+    private TableView&lt;CustomerController.CartRow&gt; customerHistoryTbl;
+
+    @FXML
+    private TableColumn&lt;CustomerController.CartRow, String&gt; historyBarcodeCol;
+
+    @FXML
+    private TableColumn&lt;CustomerController.CartRow, String&gt; historyNameCol;
+
+    @FXML
+    private TableColumn&lt;CustomerController.CartRow, Double&gt; historyPriceCol;
+
+    @FXML
+    private TableColumn&lt;CustomerController.CartRow, Integer&gt; historyQuantityCol;
+
+    @FXML
+    private Button dismissBtn;
+
+
+    @FXML
+    public void initialize() {
+<span class="nc" id="L54">        historyRows.clear();</span>
+<span class="nc" id="L55">        List&lt;Transaction&gt; transactions = transactionService.selectLatestFiveTransaction(UserSession.getCurrentUser().getUserId());</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        for (Transaction t:transactions) {</span>
+<span class="nc" id="L57">            List&lt;Order&gt; order = orderService.getByTransactionId(t.getTransactionId());</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            for(Order o: order) {</span>
+<span class="nc" id="L59">                int commodity_id = o.getCommodityId();</span>
+<span class="nc" id="L60">                Commodity commodities = commodityService.getCommodity(commodity_id);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                if (historyRows.size() &gt;= 5){</span>
+<span class="nc" id="L62">                    break;</span>
+                }else {
+<span class="nc" id="L64">                    String commodityID = String.valueOf(commodities.getCommodityId());</span>
+<span class="nc" id="L65">                    String name = commodities.getName();</span>
+<span class="nc" id="L66">                    double price = commodities.getPrice();</span>
+<span class="nc" id="L67">                    int quantity = commodities.getQuantity();</span>
+<span class="nc" id="L68">                    historyRows.add(new CustomerController.CartRow(commodityID,name,price,quantity));</span>
+                }
+<span class="nc" id="L70">            }</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">        historyBarcodeCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;barCode&quot;));</span>
+<span class="nc" id="L73">        historyNameCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="nc" id="L74">        historyPriceCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;price&quot;));</span>
+<span class="nc" id="L75">        historyQuantityCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;quantity&quot;));</span>
+<span class="nc" id="L76">        ObservableList&lt;CustomerController.CartRow&gt; historyView = FXCollections.observableArrayList(historyRows);</span>
+<span class="nc" id="L77">        customerHistoryTbl.setItems(historyView);</span>
+<span class="nc" id="L78">        historyWelcomeLabel.setText(&quot;Nice to meet you again, &quot;+ UserSession.getCurrentUser().getUsername()+&quot;!&quot;);</span>
+<span class="nc" id="L79">    }</span>
+
+    @FXML
+    public void handleDismiss() {
+<span class="nc" id="L83">        App.secondaryStage.close();</span>
+<span class="nc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

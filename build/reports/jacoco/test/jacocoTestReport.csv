@@ -1,0 +1,58 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+VendingMachine,controller,CustomerController,669,0,24,0,157,0,27,0,15,0
+VendingMachine,controller,CardPaymentController,354,0,12,0,85,0,14,0,8,0
+VendingMachine,controller,OwnerController.UserRow,57,0,0,0,17,0,10,0,10,0
+VendingMachine,controller,SellerController.CommodityView,129,0,5,0,36,0,20,0,16,0
+VendingMachine,controller,SellerController,560,0,16,0,132,0,17,0,9,0
+VendingMachine,controller,CashierController.MoneyRow,57,0,0,0,17,0,10,0,10,0
+VendingMachine,controller,SellerController.1.new TableCell() {...},59,0,2,0,14,0,4,0,3,0
+VendingMachine,controller,CashierController,494,0,20,0,106,0,18,0,8,0
+VendingMachine,controller,CustomerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,SellerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,OwnerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,RegisterController,149,0,10,0,42,0,8,0,3,0
+VendingMachine,controller,OwnerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,OwnerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,CustomerController.CommodityRow,94,0,0,0,27,0,16,0,16,0
+VendingMachine,controller,SellerController.new Callback() {...},13,0,0,0,3,0,2,0,2,0
+VendingMachine,controller,OwnerController.2.new TableCell() {...},73,0,2,0,22,0,4,0,3,0
+VendingMachine,controller,CommodityChangeController,213,0,8,0,53,0,9,0,5,0
+VendingMachine,controller,CustomerController.CartRow,75,0,0,0,22,0,13,0,13,0
+VendingMachine,controller,LoginController,138,0,12,0,35,0,12,0,5,0
+VendingMachine,controller,CustomerHistoryController,150,0,6,0,31,0,6,0,3,0
+VendingMachine,controller,CashPaymentController,756,0,18,0,128,0,17,0,8,0
+VendingMachine,controller,CustomerController.1.new TableCell() {...},63,0,2,0,15,0,4,0,3,0
+VendingMachine,controller,OwnerController,1487,0,60,0,314,0,47,0,17,0
+VendingMachine,controller,SellerController.2.new TableCell() {...},77,0,2,0,23,0,4,0,3,0
+VendingMachine,controller,OwnerController.1.new TableCell() {...},59,0,2,0,14,0,4,0,3,0
+VendingMachine,controller,OwnerController.3.new TableCell() {...},58,0,2,0,14,0,4,0,3,0
+VendingMachine,util,MD5Util,80,0,2,0,15,0,5,0,4,0
+VendingMachine,util,CSVUtil,111,0,6,0,29,0,6,0,3,0
+VendingMachine,util,UserSession,124,0,4,0,46,0,19,0,17,0
+VendingMachine,util,AlertUtil,26,0,0,0,9,0,3,0,3,0
+VendingMachine,util,SQLSessionUtil,44,0,4,0,18,0,6,0,4,0
+VendingMachine,service,TransactionService,52,0,0,0,11,0,8,0,8,0
+VendingMachine,service,CardService,206,0,22,0,53,0,17,0,6,0
+VendingMachine,service,CommodityService,77,0,2,0,16,0,13,0,12,0
+VendingMachine,service,OrderService,19,0,0,0,5,0,3,0,3,0
+VendingMachine,service,AuthService,66,0,4,0,17,0,10,0,8,0
+VendingMachine,service,MoneyService,40,0,0,0,11,0,6,0,6,0
+VendingMachine,mapper,MoneyMapperImpl,153,0,0,0,50,0,10,0,10,0
+VendingMachine,mapper,CommodityMapperImpl,166,0,0,0,56,0,11,0,11,0
+VendingMachine,mapper,TransactionMapperImpl,154,0,0,0,52,0,12,0,12,0
+VendingMachine,mapper,OrderMapperImpl,81,0,0,0,28,0,8,0,8,0
+VendingMachine,mapper,UserMapperImpl,131,0,0,0,44,0,10,0,10,0
+VendingMachine,mapper,CardMapperImpl,38,0,0,0,13,0,3,0,3,0
+VendingMachine,calc,Calculator,10,18,4,2,5,5,3,4,1,3
+VendingMachine,Application,App,34,0,0,0,10,0,3,0,3,0
+VendingMachine,Application,Main,7,0,0,0,3,0,2,0,2,0
+VendingMachine,entity,Category,84,0,2,0,20,0,9,0,8,0
+VendingMachine,entity,User,136,0,6,0,32,0,17,0,14,0
+VendingMachine,entity,Transaction,149,0,0,0,40,0,18,0,18,0
+VendingMachine,entity,CommodityRecord,79,0,0,0,20,0,8,0,8,0
+VendingMachine,entity,Money,79,0,0,0,20,0,8,0,8,0
+VendingMachine,entity,Order,93,0,0,0,24,0,10,0,10,0
+VendingMachine,entity,Commodity,145,0,4,0,36,0,18,0,16,0
+VendingMachine,entity,Role,70,0,2,0,16,0,7,0,6,0
+VendingMachine,entity,EnvironmentConstant,3,0,0,0,1,0,1,0,1,0
+VendingMachine,entity,Card,70,0,2,0,16,0,7,0,6,0

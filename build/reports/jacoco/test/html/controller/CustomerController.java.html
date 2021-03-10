@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">controller</a> &gt; <span class="el_source">CustomerController.java</span></div><h1>CustomerController.java</h1><pre class="source lang-java linenums">package controller;
+
+import Application.App;
+import entity.EnvironmentConstant;
+import entity.Commodity;
+import entity.Order;
+import entity.Transaction;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
+import service.CommodityService;
+import service.OrderService;
+import service.TransactionService;
+import util.AlertUtil;
+import util.UserSession;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+<span class="nc" id="L35">public class CustomerController {</span>
+<span class="nc" id="L36">    private CommodityService commodityService = new CommodityService();</span>
+<span class="nc" id="L37">    private TransactionService transactionService = new TransactionService();</span>
+<span class="nc" id="L38">    private OrderService orderService = new OrderService();</span>
+<span class="nc" id="L39">    private List&lt;CommodityRow&gt; commodityRows = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L40">    private List&lt;CartRow&gt; cartRows = new ArrayList&lt;&gt;();</span>
+
+    public static class CommodityRow{
+        private SimpleStringProperty barCode;
+        private SimpleStringProperty name;
+        private SimpleDoubleProperty price;
+        private SimpleIntegerProperty remain;
+        private SimpleStringProperty quantity;
+
+<span class="nc" id="L49">        public CommodityRow(String barCode, String name, double price, int remain, int quantity) {</span>
+<span class="nc" id="L50">            this.barCode = new SimpleStringProperty(barCode);</span>
+<span class="nc" id="L51">            this.name = new SimpleStringProperty(name);</span>
+<span class="nc" id="L52">            this.price = new SimpleDoubleProperty(price);</span>
+<span class="nc" id="L53">            this.remain = new SimpleIntegerProperty(remain);</span>
+<span class="nc" id="L54">            this.quantity = new SimpleStringProperty(String.valueOf(quantity));</span>
+<span class="nc" id="L55">        }</span>
+
+        public String getBarCode() {
+<span class="nc" id="L58">            return barCode.get();</span>
+        }
+
+        public SimpleStringProperty barCodeProperty() {
+<span class="nc" id="L62">            return barCode;</span>
+        }
+
+        public void setBarCode(String barCode) {
+<span class="nc" id="L66">            this.barCode.set(barCode);</span>
+<span class="nc" id="L67">        }</span>
+
+        public String getName() {
+<span class="nc" id="L70">            return name.get();</span>
+        }
+
+        public SimpleStringProperty nameProperty() {
+<span class="nc" id="L74">            return name;</span>
+        }
+
+        public void setName(String name) {
+<span class="nc" id="L78">            this.name.set(name);</span>
+<span class="nc" id="L79">        }</span>
+
+        public int getRemain() {
+<span class="nc" id="L82">            return remain.get();</span>
+        }
+
+        public SimpleIntegerProperty remainProperty() {
+<span class="nc" id="L86">            return remain;</span>
+        }
+
+        public void setRemain(int remain) {
+<span class="nc" id="L90">            this.remain.set(remain);</span>
+<span class="nc" id="L91">        }</span>
+
+        public String getQuantity() {
+<span class="nc" id="L94">            return quantity.get();</span>
+        }
+
+        public SimpleStringProperty quantityProperty() {
+<span class="nc" id="L98">            return quantity;</span>
+        }
+
+        public void setQuantity(String quantity) {
+<span class="nc" id="L102">            this.quantity.set(quantity);</span>
+<span class="nc" id="L103">        }</span>
+
+        public double getPrice() {
+<span class="nc" id="L106">            return price.get();</span>
+        }
+
+        public SimpleDoubleProperty priceProperty() {
+<span class="nc" id="L110">            return price;</span>
+        }
+
+        public void setPrice(double price) {
+<span class="nc" id="L114">            this.price.set(price);</span>
+<span class="nc" id="L115">        }</span>
+    }
+
+    public static class CartRow{
+        private SimpleStringProperty barCode;
+        private SimpleStringProperty name;
+        private SimpleDoubleProperty price;
+        private SimpleIntegerProperty quantity;
+
+<span class="nc" id="L124">        public CartRow(String barCode, String name, double price, int quantity) {</span>
+<span class="nc" id="L125">            this.barCode = new SimpleStringProperty(barCode);</span>
+<span class="nc" id="L126">            this.name = new SimpleStringProperty(name);</span>
+<span class="nc" id="L127">            this.price = new SimpleDoubleProperty(price);</span>
+<span class="nc" id="L128">            this.quantity = new SimpleIntegerProperty(quantity);</span>
+<span class="nc" id="L129">        }</span>
+
+        public String getBarCode() {
+<span class="nc" id="L132">            return barCode.get();</span>
+        }
+
+        public SimpleStringProperty barCodeProperty() {
+<span class="nc" id="L136">            return barCode;</span>
+        }
+
+        public void setBarCode(String barCode) {
+<span class="nc" id="L140">            this.barCode.set(barCode);</span>
+<span class="nc" id="L141">        }</span>
+
+        public String getName() {
+<span class="nc" id="L144">            return name.get();</span>
+        }
+
+        public SimpleStringProperty nameProperty() {
+<span class="nc" id="L148">            return name;</span>
+        }
+
+        public void setName(String name) {
+<span class="nc" id="L152">            this.name.set(name);</span>
+<span class="nc" id="L153">        }</span>
+
+        public double getPrice() {
+<span class="nc" id="L156">            return price.get();</span>
+        }
+
+        public SimpleDoubleProperty priceProperty() {
+<span class="nc" id="L160">            return price;</span>
+        }
+
+        public void setPrice(double price) {
+<span class="nc" id="L164">            this.price.set(price);</span>
+<span class="nc" id="L165">        }</span>
+
+        public int getQuantity() {
+<span class="nc" id="L168">            return quantity.get();</span>
+        }
+
+        public SimpleIntegerProperty quantityProperty() {
+<span class="nc" id="L172">            return quantity;</span>
+        }
+
+        public void setQuantity(int quantity) {
+<span class="nc" id="L176">            this.quantity.set(quantity);</span>
+<span class="nc" id="L177">        }</span>
+    }
+
+    @FXML
+    private Button DrinkBtn;
+
+    @FXML
+    private Button LolliesBtn;
+
+    @FXML
+    private Button ChocoBtn;
+
+    @FXML
+    private Button ChipsBtn;
+
+    @FXML
+    private Label userLabel;
+
+    @FXML
+    private Label timeInfoLabel;
+
+    @FXML
+    private TableView&lt;CommodityRow&gt; infoTabTable;
+
+    @FXML
+    private TableColumn&lt;CommodityRow, String&gt; barCodeCol;
+
+    @FXML
+    private TableColumn&lt;CommodityRow, String&gt; nameCol;
+
+    @FXML
+    private TableColumn&lt;CommodityRow, Double&gt; priceCol;
+
+    @FXML
+    private TableColumn&lt;CommodityRow, Integer&gt; remainCol;
+
+    @FXML
+    private TableColumn&lt;CommodityRow, String&gt; quantityCol;
+    
+    @FXML
+    private TableView&lt;CartRow&gt; cartTable;
+
+    @FXML
+    private TableColumn&lt;CartRow, String&gt; cartBarCodeCol;
+
+    @FXML
+    private TableColumn&lt;CartRow, String&gt; cartNameCol;
+
+    @FXML
+    private TableColumn&lt;CartRow, Double&gt; cartPriceCol;
+
+    @FXML
+    private TableColumn&lt;CartRow, Integer&gt; cartQuantityCol;
+    
+    @FXML
+    private TableColumn&lt;CartRow, Void&gt; cartActionCol;
+
+    @FXML
+    private Label totalAmountLabel;
+
+
+
+
+    @FXML
+    public void handleDrink() {
+<span class="nc" id="L242">        setCommodityUI(commodityService.getAllDrinks());</span>
+<span class="nc" id="L243">    }</span>
+
+    @FXML
+    public void handleChocolate() {
+<span class="nc" id="L247">        setCommodityUI(commodityService.getAllChocolates());</span>
+<span class="nc" id="L248">    }</span>
+
+    @FXML
+    public void handleLollies() {
+<span class="nc" id="L252">        setCommodityUI(commodityService.getAllLollies());</span>
+<span class="nc" id="L253">    }</span>
+
+    @FXML
+    public void handleChips() {
+<span class="nc" id="L257">        setCommodityUI(commodityService.getAllChips());</span>
+<span class="nc" id="L258">    }</span>
+
+    @FXML
+    public void handleAddToCart() {
+<span class="nc" id="L262">        ObservableList&lt;CommodityRow&gt; rows = infoTabTable.getItems();</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">        for (CommodityRow row:rows) {</span>
+<span class="nc" id="L264">            int temp = -1;</span>
+            try{
+<span class="nc" id="L266">                temp = Integer.parseInt(row.getQuantity());</span>
+<span class="nc" id="L267">            } catch (NumberFormatException e){</span>
+<span class="nc" id="L268">                String commodityName = row.getName();</span>
+<span class="nc" id="L269">                new AlertUtil(&quot;Error&quot;,&quot;Invalid Input for &quot;+ commodityName).showAndWait();</span>
+<span class="nc" id="L270">            }</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">            if(temp &gt; 0) {</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                if (temp &lt;= row.getRemain()){</span>
+<span class="nc" id="L273">                    Integer barcode = Integer.valueOf(row.getBarCode());</span>
+<span class="nc" id="L274">                    Commodity commodity  = UserSession.getAllCommodities().get(barcode);</span>
+<span class="nc" id="L275">                    commodity.setQuantity(temp);</span>
+<span class="nc" id="L276">                    UserSession.addToCart(commodity);</span>
+<span class="nc" id="L277">                } else {</span>
+<span class="nc" id="L278">                    String commodityName = row.getName();</span>
+<span class="nc" id="L279">                    int amount = row.getRemain();</span>
+<span class="nc" id="L280">                    new AlertUtil(&quot;Error&quot;,&quot;Not Enough&quot; +commodityName+&quot;, selection failed. Only &quot;+amount+&quot; commodities left.&quot;).showAndWait();</span>
+                }
+            }
+<span class="nc" id="L283">        }</span>
+<span class="nc" id="L284">        setCartUI();</span>
+<span class="nc" id="L285">        setCommodityUI(commodityService.getAllCommodities());</span>
+<span class="nc" id="L286">        new AlertUtil(&quot;Add Success!&quot;,&quot;Commodities added to cart!&quot;).show();</span>
+<span class="nc" id="L287">    }</span>
+
+    @FXML
+    public void initialize() throws IOException {
+<span class="nc" id="L291">        userLabel.setText(&quot;Welcome, &quot;+ UserSession.getCurrentUser().getUsername());</span>
+<span class="nc" id="L292">        timeInfoLabel.setText(dateNow());</span>
+<span class="nc" id="L293">        UserSession.flushCommodities();</span>
+<span class="nc" id="L294">        List&lt;Commodity&gt; commodityList = new ArrayList&lt;&gt;(UserSession.getAllCommodities().values());</span>
+<span class="nc" id="L295">        setCommodityUI(commodityList);</span>
+<span class="nc" id="L296">        setCartUI();</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        if (!UserSession.isWelcome()){</span>
+<span class="nc" id="L298">            showHistoryPurchase();</span>
+<span class="nc" id="L299">            UserSession.setWelcome(true);</span>
+        }
+<span class="nc" id="L301">    }</span>
+
+
+
+    private void showHistoryPurchase() throws IOException {
+<span class="nc" id="L306">        List&lt;Transaction&gt; transactions = transactionService.selectLatestFiveTransaction(UserSession.getCurrentUser().getUserId());</span>
+<span class="nc bnc" id="L307" title="All 4 branches missed.">        if(transactions == null || transactions.size() == 0) {</span>
+<span class="nc" id="L308">            new AlertUtil(&quot;Welcome!&quot;,&quot;Welcome, new customer!&quot;).showAndWait();</span>
+        } else {
+<span class="nc" id="L310">            Parent parent = FXMLLoader.load(getClass().getResource(&quot;/view/CustomerHistory.fxml&quot;));</span>
+<span class="nc" id="L311">            Scene scene = new Scene(parent);</span>
+<span class="nc" id="L312">            App.secondaryStage.setScene(scene);</span>
+<span class="nc" id="L313">            App.secondaryStage.setTitle(&quot;Purchase History&quot;);</span>
+<span class="nc" id="L314">            App.secondaryStage.show();</span>
+        }
+<span class="nc" id="L316">    }</span>
+
+    private String dateNow(){
+<span class="nc" id="L319">        Date d = new Date();</span>
+<span class="nc" id="L320">        SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L321">        return sdf.format(d);</span>
+    }
+
+    @FXML
+    public void handleLogOut() throws IOException {
+<span class="nc" id="L326">        UserSession.logout();</span>
+<span class="nc" id="L327">        Parent parent = FXMLLoader.load(getClass().getResource(&quot;/view/Login.fxml&quot;));</span>
+<span class="nc" id="L328">        Scene scene = new Scene(parent);</span>
+<span class="nc" id="L329">        App.primaryStage.setScene(scene);</span>
+<span class="nc" id="L330">    }</span>
+
+    private void setCommodityUI(List&lt;Commodity&gt; commodityList){
+<span class="nc" id="L333">        commodityRows.clear();</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        for (int i = 0; i &lt; commodityList.size(); i++) {</span>
+<span class="nc" id="L335">            String commodityID = String.valueOf(commodityList.get(i).getCommodityId());</span>
+<span class="nc" id="L336">            String name = commodityList.get(i).getName();</span>
+<span class="nc" id="L337">            double price = commodityList.get(i).getPrice();</span>
+<span class="nc" id="L338">            int remain = commodityList.get(i).getQuantity();</span>
+<span class="nc" id="L339">            commodityRows.add(new CommodityRow(commodityID,name,price,remain,0));</span>
+        }
+<span class="nc" id="L341">        barCodeCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;barCode&quot;));</span>
+<span class="nc" id="L342">        nameCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="nc" id="L343">        priceCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;price&quot;));</span>
+<span class="nc" id="L344">        remainCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;remain&quot;));</span>
+<span class="nc" id="L345">        quantityCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;quantity&quot;));</span>
+<span class="nc" id="L346">        ObservableList&lt;CommodityRow&gt; commodityUI = FXCollections.observableArrayList(commodityRows);</span>
+<span class="nc" id="L347">        infoTabTable.setItems(commodityUI);</span>
+<span class="nc" id="L348">        infoTabTable.setEditable(true);</span>
+<span class="nc" id="L349">        quantityCol.setCellFactory(TextFieldTableCell.forTableColumn());</span>
+<span class="nc" id="L350">    }</span>
+
+    private void setCartUI(){
+<span class="nc" id="L353">        List&lt;Commodity&gt; commodityList = new ArrayList&lt;&gt;(UserSession.getShoppingCart().values());</span>
+<span class="nc" id="L354">        cartRows.clear();</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">        for (int i = 0; i &lt; commodityList.size(); i++) {</span>
+<span class="nc" id="L356">            String commodityID = String.valueOf(commodityList.get(i).getCommodityId());</span>
+<span class="nc" id="L357">            String name = commodityList.get(i).getName();</span>
+<span class="nc" id="L358">            double price = commodityList.get(i).getPrice();</span>
+            // number of commodities in need
+<span class="nc" id="L360">            int quantity = commodityList.get(i).getQuantity();</span>
+<span class="nc" id="L361">            cartRows.add(new CartRow(commodityID,name,price,quantity));</span>
+        }
+<span class="nc" id="L363">        cartBarCodeCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;barCode&quot;));</span>
+<span class="nc" id="L364">        cartNameCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="nc" id="L365">        cartPriceCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;price&quot;));</span>
+<span class="nc" id="L366">        cartQuantityCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;quantity&quot;));</span>
+<span class="nc" id="L367">        Callback&lt;TableColumn&lt;CartRow, Void&gt;, TableCell&lt;CartRow, Void&gt;&gt; cellFactory = new Callback&lt;TableColumn&lt;CartRow, Void&gt;, TableCell&lt;CartRow, Void&gt;&gt;() {</span>
+            @Override
+            public TableCell&lt;CartRow, Void&gt; call(final TableColumn&lt;CartRow, Void&gt; param) {
+<span class="nc" id="L370">                final TableCell&lt;CartRow, Void&gt; cell = new TableCell&lt;CartRow, Void&gt;() {</span>
+
+<span class="nc" id="L372">                    private final Button btn = new Button(&quot;Delete&quot;);</span>
+
+                    {
+<span class="nc" id="L375">                        btn.setOnAction((ActionEvent event) -&gt; {</span>
+<span class="nc" id="L376">                            CartRow CartRow = getTableView().getItems().get(getIndex());</span>
+<span class="nc" id="L377">                            int barcode = Integer.parseInt(CartRow.getBarCode());</span>
+<span class="nc" id="L378">                            UserSession.getShoppingCart().remove(barcode);</span>
+<span class="nc" id="L379">                            getTableView().getItems().remove(CartRow);</span>
+<span class="nc" id="L380">                            totalAmountLabel.setText(&quot;Total: &quot; + UserSession.getCartAmount());</span>
+<span class="nc" id="L381">                        });</span>
+<span class="nc" id="L382">                    }</span>
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+<span class="nc" id="L386">                        super.updateItem(item, empty);</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">                        if (empty) {</span>
+<span class="nc" id="L388">                            setGraphic(null);</span>
+                        } else {
+<span class="nc" id="L390">                            setGraphic(btn);</span>
+                        }
+<span class="nc" id="L392">                    }</span>
+                };
+<span class="nc" id="L394">                return cell;</span>
+            }
+        };
+<span class="nc" id="L397">        cartActionCol.setCellFactory(cellFactory);</span>
+<span class="nc" id="L398">        ObservableList&lt;CartRow&gt; cartUI = FXCollections.observableArrayList(cartRows);</span>
+<span class="nc" id="L399">        cartTable.setItems(cartUI);</span>
+<span class="nc" id="L400">        totalAmountLabel.setText(&quot;Total: &quot; + UserSession.getCartAmount());</span>
+<span class="nc" id="L401">    }</span>
+
+
+    @FXML
+    public void handleCardPay() throws IOException {
+<span class="nc bnc" id="L406" title="All 2 branches missed.">        if (UserSession.getShoppingCart().size()==0){</span>
+<span class="nc" id="L407">            new AlertUtil(&quot;Error&quot;, &quot;The shopping cart is empty!&quot;).showAndWait();</span>
+<span class="nc" id="L408">            return;</span>
+        }
+<span class="nc" id="L410">        Transaction transaction = new Transaction();</span>
+<span class="nc" id="L411">        transaction.setUserId(UserSession.getCurrentUser().getUserId());</span>
+<span class="nc" id="L412">        transaction.setPrice(UserSession.getCartAmount());</span>
+<span class="nc" id="L413">        transaction.setPayment(EnvironmentConstant.CARD_PAYMENT);</span>
+<span class="nc" id="L414">        transaction.setStatus(EnvironmentConstant.TRANSACTION_IN_PROGRESS);</span>
+<span class="nc" id="L415">        transaction.setTime(new Date());</span>
+<span class="nc" id="L416">        transactionService.addTransaction(transaction);</span>
+<span class="nc" id="L417">        int transactionID = transaction.getTransactionId();</span>
+<span class="nc" id="L418">        UserSession.setCurrentTransaction(transactionID);</span>
+<span class="nc" id="L419">        Map&lt;Integer, Commodity&gt; map = UserSession.getShoppingCart();</span>
+
+<span class="nc bnc" id="L421" title="All 2 branches missed.">        for (Integer id:map.keySet()) {</span>
+<span class="nc" id="L422">            Order order = new Order();</span>
+<span class="nc" id="L423">            order.setCommodityId(id);</span>
+<span class="nc" id="L424">            order.setTransactionId(transactionID);</span>
+<span class="nc" id="L425">            order.setQuantity(map.get(id).getQuantity());</span>
+<span class="nc" id="L426">            orderService.addOrder(order);</span>
+<span class="nc" id="L427">        }</span>
+
+<span class="nc" id="L429">        Parent parent = FXMLLoader.load(getClass().getResource(&quot;/view/CardPayment.fxml&quot;));</span>
+<span class="nc" id="L430">        Scene scene = new Scene(parent);</span>
+<span class="nc" id="L431">        App.secondaryStage.setScene(scene);</span>
+<span class="nc" id="L432">        App.secondaryStage.setTitle(&quot;Card Payment&quot;);</span>
+<span class="nc" id="L433">        App.secondaryStage.show();</span>
+<span class="nc" id="L434">    }</span>
+
+    @FXML
+    public void handleCashPay() throws IOException {
+<span class="nc bnc" id="L438" title="All 2 branches missed.">        if (UserSession.getShoppingCart().size()==0) {</span>
+<span class="nc" id="L439">            new AlertUtil(&quot;Error&quot;, &quot;The shopping cart is empty!&quot;).showAndWait();</span>
+<span class="nc" id="L440">            return;</span>
+        }
+<span class="nc" id="L442">        Transaction transaction = new Transaction();</span>
+<span class="nc" id="L443">        transaction.setUserId(UserSession.getCurrentUser().getUserId());</span>
+<span class="nc" id="L444">        transaction.setPrice(UserSession.getCartAmount());</span>
+<span class="nc" id="L445">        transaction.setPayment(EnvironmentConstant.CASH_PAYMENT);</span>
+<span class="nc" id="L446">        transaction.setStatus(EnvironmentConstant.TRANSACTION_IN_PROGRESS);</span>
+<span class="nc" id="L447">        transaction.setTime(new Date());</span>
+<span class="nc" id="L448">        transactionService.addTransaction(transaction);</span>
+<span class="nc" id="L449">        int transactionID = transaction.getTransactionId();</span>
+<span class="nc" id="L450">        UserSession.setCurrentTransaction(transactionID);</span>
+<span class="nc" id="L451">        Map&lt;Integer, Commodity&gt; map = UserSession.getShoppingCart();</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        for (Integer id:map.keySet()) {</span>
+<span class="nc" id="L453">            Order order = new Order();</span>
+<span class="nc" id="L454">            order.setCommodityId(id);</span>
+<span class="nc" id="L455">            order.setTransactionId(transactionID);</span>
+<span class="nc" id="L456">            order.setQuantity(map.get(id).getQuantity());</span>
+<span class="nc" id="L457">            orderService.addOrder(order);</span>
+<span class="nc" id="L458">        }</span>
+<span class="nc" id="L459">        Parent parent = FXMLLoader.load(getClass().getResource(&quot;/view/CashPayment.fxml&quot;));</span>
+<span class="nc" id="L460">        Scene scene = new Scene(parent);</span>
+<span class="nc" id="L461">        App.secondaryStage.setScene(scene);</span>
+<span class="nc" id="L462">        App.secondaryStage.setTitle(&quot;Cash Payment&quot;);</span>
+<span class="nc" id="L463">        App.secondaryStage.show();</span>
+
+<span class="nc" id="L465">    }</span>
+
+    @FXML
+    public void handleClearCart() {
+<span class="nc" id="L469">        cartRows.clear();</span>
+<span class="nc" id="L470">        UserSession.getShoppingCart().clear();</span>
+<span class="nc" id="L471">        ObservableList&lt;CartRow&gt; cartUI = FXCollections.observableArrayList(cartRows);</span>
+<span class="nc" id="L472">        cartTable.setItems(cartUI);</span>
+<span class="nc" id="L473">        totalAmountLabel.setText(&quot;Total: &quot; + 0);</span>
+<span class="nc" id="L474">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

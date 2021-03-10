@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CardMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">mapper</a> &gt; <span class="el_source">CardMapperImpl.java</span></div><h1>CardMapperImpl.java</h1><pre class="source lang-java linenums">package mapper;
+
+import entity.Card;
+import util.SQLSessionUtil;
+import org.apache.ibatis.session.SqlSession;
+
+<span class="nc" id="L7">public class CardMapperImpl implements CardMapper{</span>
+
+//    @Override
+//    public int deleteByPrimaryKey(Integer number) {
+//        return 0;
+//    }
+
+
+//    @Override
+//    public int insert(Card record) {
+//        SqlSession session = SQLSessionUtil.openSqlSession();
+//        CardMapper CardMapper = session.getMapper(CardMapper.class);
+//        int rs = CardMapper.insert(record);
+//        session.commit();
+//        session.close();
+//        return rs;
+//    }
+
+//    @Override
+//    public int insertSelective(Card record){
+//        SqlSession session = SQLSessionUtil.openSqlSession();
+//        CardMapper CardMapper = session.getMapper(CardMapper.class);
+//        int rs = CardMapper.insert(record);
+//        session.commit();
+//        session.close();
+//        return rs;
+//    }
+
+    @Override
+    public Card selectByPrimaryKey(Integer number){
+<span class="nc" id="L37">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L38">        CardMapper cardMapper = session.getMapper(CardMapper.class);</span>
+<span class="nc" id="L39">        Card card = cardMapper.selectByPrimaryKey(number);</span>
+<span class="nc" id="L40">        session.commit();</span>
+<span class="nc" id="L41">        session.close();</span>
+<span class="nc" id="L42">        return card;</span>
+    }
+
+//    @Override
+//    public int updateByPrimaryKeySelective(Card record){
+//        SqlSession session = SQLSessionUtil.openSqlSession();
+//        CardMapper cardMapper = session.getMapper(CardMapper.class);
+//        int rs = cardMapper.updateByPrimaryKeySelective(record);
+//        session.commit(true);
+//        session.close();
+//        return rs;
+//    }
+
+    @Override
+    public int updateByPrimaryKey(Card record){
+<span class="nc" id="L57">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L58">        CardMapper cardMapper = session.getMapper(CardMapper.class);</span>
+<span class="nc" id="L59">        int rs = cardMapper.updateByPrimaryKey(record);</span>
+<span class="nc" id="L60">        session.commit(true);</span>
+<span class="nc" id="L61">        session.close();</span>
+<span class="nc" id="L62">        return rs;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

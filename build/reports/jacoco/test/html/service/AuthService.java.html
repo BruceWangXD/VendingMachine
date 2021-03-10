@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package service;
+
+
+import entity.User;
+import mapper.UserMapper;
+import mapper.UserMapperImpl;
+import util.MD5Util;
+
+import java.util.List;
+
+/**
+ * The service for authentication, e.g. login and register
+ *
+ * @author &lt;Kelly Huang&gt;
+ * @since &lt;pre&gt;Nov. 2, 2020&lt;/pre&gt;
+ * @version 1.0
+ */
+public class AuthService {
+    private final UserMapper userMapper;
+
+<span class="nc" id="L21">    public AuthService() {</span>
+<span class="nc" id="L22">        this.userMapper = new UserMapperImpl();</span>
+<span class="nc" id="L23">    }</span>
+
+    public User login(String username, String password) {
+        // Finding user with matching username
+<span class="nc" id="L27">        User user = userMapper.selectByUserName(username);</span>
+        // If matching user not exists, return null
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L30">            return null;</span>
+        }
+        // Generates hashed password
+<span class="nc" id="L33">        String salt = user.getSalt();</span>
+<span class="nc" id="L34">        String hash = MD5Util.md5(password + salt);</span>
+
+        // Check whether the password is matching or nor
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (hash.equals(user.getPassword())) {</span>
+<span class="nc" id="L38">            return user;</span>
+        }
+<span class="nc" id="L40">        return null;</span>
+    }
+
+    public User getAnonymousUser(){
+<span class="nc" id="L44">        return userMapper.selectByPrimaryKey(0);</span>
+    }
+
+    public int register(User user) {
+<span class="nc" id="L48">        return userMapper.insertSelective(user);</span>
+    }
+
+    public List&lt;User&gt; getAllUser() {
+<span class="nc" id="L52">        return userMapper.selectAll();</span>
+    }
+
+    public User getUserById(int id){
+<span class="nc" id="L56">        return userMapper.selectByPrimaryKey(id);</span>
+    }
+
+    public int updateUser(User user){
+<span class="nc" id="L60">        return userMapper.updateByPrimaryKeySelective(user);</span>
+    }
+
+    public int removeUser(int uid){
+<span class="nc" id="L64">        return userMapper.deleteByPrimaryKey(uid);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

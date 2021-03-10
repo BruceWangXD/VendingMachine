@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Card.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">entity</a> &gt; <span class="el_source">Card.java</span></div><h1>Card.java</h1><pre class="source lang-java linenums">package entity;
+
+import java.io.Serializable;
+
+<span class="nc" id="L5">public class Card implements Serializable {</span>
+    private Integer number;
+
+    private String name;
+
+    private static final long serialVersionUID = 1L;
+
+    public Integer getNumber() {
+<span class="nc" id="L13">        return number;</span>
+    }
+
+    public void setNumber(Integer number) {
+<span class="nc" id="L17">        this.number = number;</span>
+<span class="nc" id="L18">    }</span>
+
+    public String getName() {
+<span class="nc" id="L21">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        this.name = name == null ? null : name.trim();</span>
+<span class="nc" id="L26">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L30">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L31">        sb.append(getClass().getSimpleName());</span>
+<span class="nc" id="L32">        sb.append(&quot; [&quot;);</span>
+<span class="nc" id="L33">        sb.append(&quot;Hash = &quot;).append(hashCode());</span>
+<span class="nc" id="L34">        sb.append(&quot;, number=&quot;).append(number);</span>
+<span class="nc" id="L35">        sb.append(&quot;, name=&quot;).append(name);</span>
+<span class="nc" id="L36">        sb.append(&quot;, serialVersionUID=&quot;).append(serialVersionUID);</span>
+<span class="nc" id="L37">        sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L38">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

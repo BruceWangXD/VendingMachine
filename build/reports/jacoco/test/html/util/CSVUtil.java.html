@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CSVUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">util</a> &gt; <span class="el_source">CSVUtil.java</span></div><h1>CSVUtil.java</h1><pre class="source lang-java linenums">package util;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+<span class="nc" id="L9">public class CSVUtil {</span>
+    public static File createCSV(List&lt;String&gt; head,List&lt;List&lt;String&gt;&gt; data, String path, String filename){
+<span class="nc" id="L11">        File csv = null;</span>
+<span class="nc" id="L12">        BufferedWriter csvWriter = null;</span>
+        try{
+            // creates new csv file in given path
+<span class="nc" id="L15">            File file = new File(path);</span>
+<span class="nc bnc" id="L16" title="All 2 branches missed.">            if (!file.exists()) {</span>
+<span class="nc" id="L17">                file.mkdir();</span>
+            }
+<span class="nc" id="L19">            SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;);</span>
+<span class="nc" id="L20">            String date = df.format(new Date());</span>
+<span class="nc" id="L21">            csv =new File(path + filename + date + &quot;.csv&quot;);</span>
+<span class="nc" id="L22">            file.createNewFile();</span>
+
+            // creates writer for recognising the separator clearly
+<span class="nc" id="L25">            csvWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csv), &quot;UTF-8&quot;), 1024);</span>
+
+            // writes head
+<span class="nc" id="L28">            writeLine(head,csvWriter);</span>
+
+            // writes data
+<span class="nc bnc" id="L31" title="All 2 branches missed.">            for (List&lt;String&gt; line : data){</span>
+<span class="nc" id="L32">                writeLine(line,csvWriter);</span>
+<span class="nc" id="L33">            }</span>
+
+<span class="nc" id="L35">        } catch (Exception e) {</span>
+<span class="nc" id="L36">            e.printStackTrace();</span>
+        } finally {
+            try {
+<span class="nc" id="L39">                csvWriter.close();</span>
+<span class="nc" id="L40">            } catch (IOException e) {</span>
+<span class="nc" id="L41">                e.printStackTrace();</span>
+<span class="nc" id="L42">            }</span>
+        }
+<span class="nc" id="L44">        return csv;</span>
+    }
+
+
+    private static void writeLine(List&lt;String&gt; line, BufferedWriter csvWriter) throws IOException {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        for (String section : line) {</span>
+<span class="nc" id="L50">            StringBuffer sb = new StringBuffer();</span>
+<span class="nc" id="L51">            String lineJoined = sb.append(&quot;\&quot;&quot;).append(section).append(&quot;\&quot;,&quot;).toString();</span>
+<span class="nc" id="L52">            csvWriter.write(lineJoined);</span>
+<span class="nc" id="L53">        }</span>
+<span class="nc" id="L54">        csvWriter.newLine();</span>
+<span class="nc" id="L55">    }</span>
+
+//    public static void main(String[] args){
+//        List&lt;String&gt; test = new ArrayList&lt;&gt;();
+//        test.add(&quot;1&quot;);
+//        test.add(&quot;2&quot;);
+//        test.add(&quot;3&quot;);
+//        List&lt;String&gt; a = new ArrayList&lt;&gt;();
+//        List&lt;List&lt;String&gt;&gt; b = new ArrayList&lt;&gt;();
+//        a.add(&quot;first&quot;);
+//        a.add(&quot;second&quot;);
+//        a.add(&quot;third&quot;);
+//        b.add(a);
+//        b.add(a);
+//
+//        File directory = new File(&quot;&quot;);
+//        System.out.println(directory.getAbsolutePath());
+//        SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;);
+//        String date = df.format(new Date());
+//        createCSV(test,b,directory.getAbsolutePath().concat(&quot;/build/reports/&quot;),&quot;CurrentItem &quot;.concat(date));
+//    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

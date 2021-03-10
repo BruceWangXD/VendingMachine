@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Category.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">entity</a> &gt; <span class="el_source">Category.java</span></div><h1>Category.java</h1><pre class="source lang-java linenums">package entity;
+
+import java.io.Serializable;
+
+<span class="nc" id="L5">public class Category implements Serializable {</span>
+    private Integer categoryId;
+    private String categoryName;
+    private Integer parentId;
+    private static final long serialVersionUID = 1L;
+
+    public Integer getCategoryId() {
+<span class="nc" id="L12">        return categoryId;</span>
+    }
+
+    public void setCategoryId(Integer categoryId) {
+<span class="nc" id="L16">        this.categoryId = categoryId;</span>
+<span class="nc" id="L17">    }</span>
+
+    public String getCategoryName() {
+<span class="nc" id="L20">        return categoryName;</span>
+    }
+
+    public void setCategoryName(String categoryName) {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        this.categoryName = categoryName == null ? null : categoryName.trim();</span>
+<span class="nc" id="L25">    }</span>
+
+    public Integer getParentId() {
+<span class="nc" id="L28">        return parentId;</span>
+    }
+
+    public void setParentId(Integer parentId) {
+<span class="nc" id="L32">        this.parentId = parentId;</span>
+<span class="nc" id="L33">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L37">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L38">        sb.append(getClass().getSimpleName());</span>
+<span class="nc" id="L39">        sb.append(&quot; [&quot;);</span>
+<span class="nc" id="L40">        sb.append(&quot;Hash = &quot;).append(hashCode());</span>
+<span class="nc" id="L41">        sb.append(&quot;, categoryId=&quot;).append(categoryId);</span>
+<span class="nc" id="L42">        sb.append(&quot;, categoryName=&quot;).append(categoryName);</span>
+<span class="nc" id="L43">        sb.append(&quot;, parentId=&quot;).append(parentId);</span>
+<span class="nc" id="L44">        sb.append(&quot;, serialVersionUID=&quot;).append(serialVersionUID);</span>
+<span class="nc" id="L45">        sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L46">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

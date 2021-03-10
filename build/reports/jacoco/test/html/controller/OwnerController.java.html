@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OwnerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">controller</a> &gt; <span class="el_source">OwnerController.java</span></div><h1>OwnerController.java</h1><pre class="source lang-java linenums">package controller;
+
+import Application.App;
+import entity.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
+import mapper.UserMapper;
+import mapper.UserMapperImpl;
+import service.*;
+import util.AlertUtil;
+import util.CSVUtil;
+import util.MD5Util;
+import util.UserSession;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+<span class="nc" id="L31">public class OwnerController {</span>
+
+<span class="nc" id="L33">    private final UserMapper userMapper = new UserMapperImpl();</span>
+<span class="nc" id="L34">    private final Map&lt;Integer, String&gt; roleMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L35">    private final AuthService userService = new AuthService();</span>
+<span class="nc" id="L36">    List&lt;UserRow&gt; userRows = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L37">    private final AuthService authService = new AuthService();</span>
+
+<span class="nc" id="L39">    private final Map&lt;String, Integer&gt; categoryMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L40">    private final List&lt;String&gt; categoryList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L41">    private final List&lt;SellerController.CommodityView&gt; commodityViewList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L42">    private final CommodityService commodityService = new CommodityService();</span>
+
+<span class="nc" id="L44">    private final MoneyService moneyService = new MoneyService();</span>
+<span class="nc" id="L45">    private final List&lt;CashierController.MoneyRow&gt; moneyRowList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L46">    private final OrderService orderService = new OrderService();</span>
+<span class="nc" id="L47">    private final TransactionService transactionService = new TransactionService();</span>
+
+    @FXML
+    public void handleAddUser(ActionEvent event){
+<span class="nc" id="L51">        String userName = userNameFld.getText();</span>
+<span class="nc" id="L52">        String password = passwordFld.getText();</span>
+<span class="nc" id="L53">        String confirm = confirmFld.getText();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (!password.equals(confirm)) {</span>
+            // Situation of passwords not matching
+<span class="nc" id="L56">            AlertUtil alert = new AlertUtil(&quot;Alert&quot;, &quot;Passwords do not match!&quot;);</span>
+<span class="nc" id="L57">            alert.show();</span>
+<span class="nc" id="L58">            passwordFld.clear();</span>
+<span class="nc" id="L59">            confirmFld.clear();</span>
+
+<span class="nc bnc" id="L61" title="All 4 branches missed.">        } else if (userName.isEmpty() || password.isEmpty()) {</span>
+            // Situation of not input proper password or username
+<span class="nc" id="L63">            AlertUtil alert = new AlertUtil(&quot;Error&quot;, &quot;Please fill in the form!&quot;);</span>
+<span class="nc" id="L64">            alert.show();</span>
+<span class="nc" id="L65">            passwordFld.clear();</span>
+<span class="nc" id="L66">            confirmFld.clear();</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        } else if (userMapper.CheckExistUser(userName) != 0) {</span>
+            // Situation of a username already exists in system
+
+<span class="nc" id="L71">            AlertUtil alert = new AlertUtil(&quot;Error&quot;, &quot;Username already exists, please change another username!&quot;);</span>
+<span class="nc" id="L72">            alert.show();</span>
+<span class="nc" id="L73">            passwordFld.clear();</span>
+<span class="nc" id="L74">            confirmFld.clear();</span>
+<span class="nc" id="L75">        }</span>
+        else{
+<span class="nc" id="L77">            String salt = MD5Util.salt();</span>
+<span class="nc" id="L78">            String hash = MD5Util.md5(password + salt);</span>
+<span class="nc" id="L79">            User user = new User();</span>
+<span class="nc" id="L80">            user.setUsername(userName);</span>
+<span class="nc" id="L81">            user.setSalt(salt);</span>
+<span class="nc" id="L82">            user.setPassword(hash);</span>
+<span class="nc" id="L83">            String role = roleChoiceBox.getValue();</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (&quot;CASHIER&quot;.equals(role)){</span>
+<span class="nc" id="L86">                user.setRole(EnvironmentConstant.ROLE_CASHIER);</span>
+            }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            else if (&quot;OWNER&quot;.equals(role)){</span>
+<span class="nc" id="L89">                user.setRole(EnvironmentConstant.ROLE_OWNER);</span>
+            }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            else if (&quot;SELLER&quot;.equals(role)){</span>
+<span class="nc" id="L92">                user.setRole(EnvironmentConstant.ROLE_SELLER);</span>
+            }
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            else if(&quot;CUSTOMER&quot;.equals(role)){</span>
+<span class="nc" id="L95">                user.setRole(EnvironmentConstant.ROLE_CUSTOMER);</span>
+            }
+<span class="nc" id="L97">            int rs = authService.register(user);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            if (rs == 1) {</span>
+<span class="nc" id="L99">                new AlertUtil(&quot;SUCCESS&quot;, &quot;New User Add!&quot;).show();</span>
+            }
+            else{
+<span class="nc" id="L102">                new AlertUtil(&quot;Error&quot;, &quot;New User Add Failed!&quot;);</span>
+            }
+        }
+<span class="nc" id="L105">        setUserUI();</span>
+<span class="nc" id="L106">    }</span>
+
+    @FXML
+    private Label userWelcomeLabel;
+
+    @FXML
+    private Label timeInfoLabel;
+
+    @FXML
+    private TableView&lt;UserRow&gt; userTable;
+
+    @FXML
+    private TableColumn&lt;UserRow, String&gt; uidCol;
+
+    @FXML
+    private TableColumn&lt;UserRow, String&gt; userNameCol;
+
+    @FXML
+    private TableColumn&lt;UserRow, String&gt; roleCol;
+
+    @FXML
+    private TableColumn&lt;UserRow, Void&gt; deleteUserCol;
+
+    @FXML
+    private ChoiceBox&lt;String&gt; roleChoiceBox;
+
+    @FXML
+    private Button submitChangeBtn;
+
+    @FXML
+    private TableView&lt;CashierController.MoneyRow&gt; moneyTable;
+
+    @FXML
+    private TableColumn&lt;CashierController.MoneyRow, String&gt; midCol;
+
+    @FXML
+    private TableColumn&lt;CashierController.MoneyRow, String&gt; mvalueCol;
+
+    @FXML
+    private TableColumn&lt;CashierController.MoneyRow, String&gt; mquantityCol;
+
+    @FXML
+    private Button logOutBtn;
+
+    @FXML
+    private TableView&lt;SellerController.CommodityView&gt; commodityTable;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, String&gt; barcodeCol;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, String&gt; nameCol;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, String&gt; priceCol;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView,String&gt; quantityCol;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, String&gt; categoryCol;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, Void&gt; deleteCol;
+
+    @FXML
+    private TextField userNameFld;
+
+    @FXML
+    private PasswordField passwordFld;
+
+    @FXML
+    private PasswordField confirmFld;
+
+    @FXML
+    private TableColumn&lt;SellerController.CommodityView, Void&gt; modifyCol;
+
+    @FXML
+    public void initialize() {
+<span class="nc" id="L185">        userWelcomeLabel.setText(&quot;Welcome, &quot;+ UserSession.getCurrentUser().getUsername());</span>
+<span class="nc" id="L186">        timeInfoLabel.setText(dateNow());</span>
+<span class="nc" id="L187">        initializeCategoryMap();</span>
+<span class="nc" id="L188">        initializeSellerTable();</span>
+<span class="nc" id="L189">        initializeRole();</span>
+<span class="nc" id="L190">        setUserUI();</span>
+<span class="nc" id="L191">        setMoneyUI();</span>
+<span class="nc" id="L192">    }</span>
+
+    private void initializeCategoryMap(){
+<span class="nc" id="L195">        categoryMap.clear();</span>
+<span class="nc" id="L196">        categoryList.clear();</span>
+<span class="nc" id="L197">        categoryMap.put( &quot;DRINKS&quot;,3);</span>
+<span class="nc" id="L198">        categoryList.add(&quot;DRINKS&quot;);</span>
+<span class="nc" id="L199">        categoryList.add(&quot;CHOCOLATES&quot;);</span>
+<span class="nc" id="L200">        categoryList.add(&quot;LOLLIES&quot;);</span>
+<span class="nc" id="L201">        categoryList.add(&quot;CHIPS&quot;);</span>
+<span class="nc" id="L202">        categoryMap.put(&quot;CHOCOLATES&quot;,4);</span>
+<span class="nc" id="L203">        categoryMap.put(&quot;LOLLIES&quot;,5);</span>
+<span class="nc" id="L204">        categoryMap.put(&quot;CHIPS&quot;,6);</span>
+<span class="nc" id="L205">    }</span>
+
+    private void initializeSellerTable(){
+<span class="nc" id="L208">        commodityViewList.clear();</span>
+<span class="nc" id="L209">        List&lt;Commodity&gt; commodityList = commodityService.getAllCommodities();</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">        for (Commodity commodity : commodityList){</span>
+<span class="nc" id="L211">            String barCode = String.valueOf(commodity.getCommodityId());</span>
+<span class="nc" id="L212">            String name = commodity.getName();</span>
+<span class="nc" id="L213">            String price = String.valueOf(commodity.getPrice());</span>
+<span class="nc" id="L214">            String category = String.valueOf(commodity.getCategory());</span>
+<span class="nc" id="L215">            String quantity = String.valueOf(commodity.getQuantity());</span>
+<span class="nc" id="L216">            SellerController.CommodityView temp = new SellerController.CommodityView(barCode, name, price, category, quantity);</span>
+<span class="nc" id="L217">            commodityViewList.add(temp);</span>
+<span class="nc" id="L218">        }</span>
+<span class="nc" id="L219">        barcodeCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;barCode&quot;));</span>
+<span class="nc" id="L220">        categoryCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;category&quot;));</span>
+<span class="nc" id="L221">        nameCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="nc" id="L222">        priceCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;price&quot;));</span>
+<span class="nc" id="L223">        quantityCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;quantity&quot;));</span>
+
+<span class="nc" id="L225">        Callback&lt;TableColumn&lt;SellerController.CommodityView, Void&gt;, TableCell&lt;SellerController.CommodityView, Void&gt;&gt; cellFactory = new Callback&lt;TableColumn&lt;SellerController.CommodityView, Void&gt;, TableCell&lt;SellerController.CommodityView, Void&gt;&gt;() {</span>
+            @Override
+            public TableCell&lt;SellerController.CommodityView, Void&gt; call(final TableColumn&lt;SellerController.CommodityView, Void&gt; param) {
+<span class="nc" id="L228">                final TableCell&lt;SellerController.CommodityView, Void&gt; cell = new TableCell&lt;SellerController.CommodityView, Void&gt;() {</span>
+
+<span class="nc" id="L230">                    private final Button btn = new Button(&quot;Delete&quot;);</span>
+
+                    {
+<span class="nc" id="L233">                        btn.setOnAction((ActionEvent event) -&gt; {</span>
+<span class="nc" id="L234">                            SellerController.CommodityView CartRow = getTableView().getItems().get(getIndex());</span>
+<span class="nc" id="L235">                            int barcode = Integer.parseInt(CartRow.getBarCode());</span>
+<span class="nc" id="L236">                            commodityService.deleteCommodity(barcode);</span>
+<span class="nc" id="L237">                            getTableView().getItems().remove(CartRow);</span>
+<span class="nc" id="L238">                        });</span>
+<span class="nc" id="L239">                    }</span>
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+<span class="nc" id="L243">                        super.updateItem(item, empty);</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                        if (empty) {</span>
+<span class="nc" id="L245">                            setGraphic(null);</span>
+                        } else {
+<span class="nc" id="L247">                            setGraphic(btn);</span>
+                        }
+<span class="nc" id="L249">                    }</span>
+                };
+<span class="nc" id="L251">                return cell;</span>
+            }
+        };
+<span class="nc" id="L254">        deleteCol.setCellFactory(cellFactory);</span>
+<span class="nc" id="L255">        Callback&lt;TableColumn&lt;SellerController.CommodityView, Void&gt;, TableCell&lt;SellerController.CommodityView, Void&gt;&gt; newCellFactory = new Callback&lt;TableColumn&lt;SellerController.CommodityView, Void&gt;, TableCell&lt;SellerController.CommodityView, Void&gt;&gt;() {</span>
+            @Override
+            public TableCell&lt;SellerController.CommodityView, Void&gt; call(final TableColumn&lt;SellerController.CommodityView, Void&gt; param) {
+<span class="nc" id="L258">                final TableCell&lt;SellerController.CommodityView, Void&gt; cell = new TableCell&lt;SellerController.CommodityView, Void&gt;() {</span>
+
+<span class="nc" id="L260">                    private final Button btn = new Button(&quot;Modify&quot;);</span>
+
+                    {
+<span class="nc" id="L263">                        btn.setOnAction((ActionEvent event) -&gt; {</span>
+<span class="nc" id="L264">                            SellerController.CommodityView CartRow = getTableView().getItems().get(getIndex());</span>
+<span class="nc" id="L265">                            int barcode = Integer.parseInt(CartRow.getBarCode());</span>
+<span class="nc" id="L266">                            UserSession.setCurrentCommodity(barcode);</span>
+<span class="nc" id="L267">                            Parent parent = null;</span>
+                            try {
+<span class="nc" id="L269">                                parent = FXMLLoader.load(getClass().getResource(&quot;/view/ChangeCommodity.fxml&quot;));</span>
+<span class="nc" id="L270">                            } catch (IOException e) {</span>
+<span class="nc" id="L271">                                e.printStackTrace();</span>
+<span class="nc" id="L272">                            }</span>
+<span class="nc" id="L273">                            Scene scene = new Scene(parent);</span>
+<span class="nc" id="L274">                            App.secondaryStage.setScene(scene);</span>
+<span class="nc" id="L275">                            App.secondaryStage.setTitle(&quot;Modify Commodity Details&quot;);</span>
+<span class="nc" id="L276">                            App.secondaryStage.show();</span>
+<span class="nc" id="L277">                        });</span>
+<span class="nc" id="L278">                    }</span>
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+<span class="nc" id="L282">                        super.updateItem(item, empty);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                        if (empty) {</span>
+<span class="nc" id="L284">                            setGraphic(null);</span>
+                        } else {
+<span class="nc" id="L286">                            setGraphic(btn);</span>
+                        }
+<span class="nc" id="L288">                    }</span>
+                };
+<span class="nc" id="L290">                return cell;</span>
+            }
+        };
+<span class="nc" id="L293">        modifyCol.setCellFactory(newCellFactory);</span>
+
+<span class="nc" id="L295">        ObservableList&lt;SellerController.CommodityView&gt; commodityViews = FXCollections.observableArrayList(commodityViewList);</span>
+<span class="nc" id="L296">        commodityTable.setItems(commodityViews);</span>
+<span class="nc" id="L297">    }</span>
+
+    private void setMoneyUI(){
+<span class="nc" id="L300">        List&lt;Money&gt; moneyList = moneyService.getAllMoney();</span>
+<span class="nc" id="L301">        moneyRowList.clear();</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">        for (int i = 0; i &lt; moneyList.size(); i++) {</span>
+<span class="nc" id="L303">            String mid = String.valueOf(moneyList.get(i).getMoneyId());</span>
+<span class="nc" id="L304">            String mValue = String.valueOf(moneyList.get(i).getValue());</span>
+<span class="nc" id="L305">            String mQuantity = String.valueOf(moneyList.get(i).getQuantity());</span>
+<span class="nc" id="L306">            moneyRowList.add(new CashierController.MoneyRow(mid, mValue, mQuantity));</span>
+        }
+<span class="nc" id="L308">        midCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;mid&quot;));</span>
+<span class="nc" id="L309">        mvalueCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;mValue&quot;));</span>
+<span class="nc" id="L310">        mquantityCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;mQuantity&quot;));</span>
+<span class="nc" id="L311">        ObservableList&lt;CashierController.MoneyRow&gt; moneyUI = FXCollections.observableArrayList(moneyRowList);</span>
+<span class="nc" id="L312">        moneyTable.setItems(moneyUI);</span>
+<span class="nc" id="L313">        moneyTable.setEditable(true);</span>
+<span class="nc" id="L314">        mquantityCol.setCellFactory(TextFieldTableCell.forTableColumn());</span>
+<span class="nc" id="L315">    }</span>
+
+    @FXML
+    public void handleSubmit(ActionEvent event) {
+<span class="nc" id="L319">        ObservableList&lt;CashierController.MoneyRow&gt; rows = moneyTable.getItems();</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        for (CashierController.MoneyRow row:rows) {</span>
+<span class="nc" id="L321">            int quantity = -1;</span>
+<span class="nc" id="L322">            int mid = -1;</span>
+            try{
+<span class="nc" id="L324">                quantity = Integer.parseInt(row.getmQuantity());</span>
+<span class="nc" id="L325">                mid = Integer.parseInt(row.getMid());</span>
+<span class="nc" id="L326">            } catch (NumberFormatException e){</span>
+<span class="nc" id="L327">                String moneyName = row.getmValue();</span>
+<span class="nc" id="L328">                new AlertUtil(&quot;Error&quot;,&quot;Invalid Input for &quot;+ moneyName + &quot; Money.&quot;).showAndWait();</span>
+<span class="nc" id="L329">                return;</span>
+<span class="nc" id="L330">            }</span>
+<span class="nc" id="L331">            Money money = new Money();</span>
+<span class="nc" id="L332">            money.setMoneyId(mid);</span>
+<span class="nc" id="L333">            money.setQuantity(quantity);</span>
+<span class="nc" id="L334">            moneyService.updateByMid(money);</span>
+<span class="nc" id="L335">        }</span>
+<span class="nc" id="L336">        setMoneyUI();</span>
+<span class="nc" id="L337">        new AlertUtil(&quot;Success!&quot;,&quot;Money Quantity Changed!&quot;).show();</span>
+<span class="nc" id="L338">    }</span>
+
+    private String dateNow(){
+<span class="nc" id="L341">        Date d = new Date();</span>
+<span class="nc" id="L342">        SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span>
+<span class="nc" id="L343">        String dateStr = sdf.format(d);</span>
+<span class="nc" id="L344">        return dateStr;</span>
+    }
+
+    private void initializeRole(){
+<span class="nc" id="L348">        this.roleMap.put(1,&quot;OWNER&quot;);</span>
+<span class="nc" id="L349">        this.roleMap.put(2,&quot;SELLER&quot;);</span>
+<span class="nc" id="L350">        this.roleMap.put(3,&quot;CUSTOMER&quot;);</span>
+<span class="nc" id="L351">        this.roleMap.put(4,&quot;CASHIER&quot;);</span>
+<span class="nc" id="L352">        List&lt;String&gt; roleList = new ArrayList&lt;&gt;(roleMap.values());</span>
+<span class="nc" id="L353">        ObservableList&lt;String&gt; roleUI = FXCollections.observableArrayList(roleList);</span>
+<span class="nc" id="L354">        roleChoiceBox.setItems(roleUI);</span>
+<span class="nc" id="L355">    }</span>
+
+    private void setUserUI(){
+<span class="nc" id="L358">        List&lt;User&gt; userList = userService.getAllUser();</span>
+<span class="nc" id="L359">        userRows.clear();</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        for (int i = 0; i &lt; userList.size(); i++) {</span>
+<span class="nc" id="L361">            String uid = String.valueOf(userList.get(i).getUserId());</span>
+<span class="nc" id="L362">            String userName = String.valueOf(userList.get(i).getUsername());</span>
+<span class="nc" id="L363">            int roleInt = userList.get(i).getRole();</span>
+<span class="nc" id="L364">            String role = roleMap.get(roleInt);</span>
+<span class="nc" id="L365">            userRows.add(new UserRow(uid, userName, role));</span>
+        }
+<span class="nc" id="L367">        uidCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;uid&quot;));</span>
+<span class="nc" id="L368">        userNameCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;userName&quot;));</span>
+<span class="nc" id="L369">        roleCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;role&quot;));</span>
+<span class="nc" id="L370">        Callback&lt;TableColumn&lt;UserRow, Void&gt;, TableCell&lt;UserRow, Void&gt;&gt; cellFactory = new Callback&lt;&gt;() {</span>
+            @Override
+            public TableCell&lt;UserRow, Void&gt; call(final TableColumn&lt;UserRow, Void&gt; param) {
+<span class="nc" id="L373">                final TableCell&lt;UserRow, Void&gt; cell = new TableCell&lt;UserRow, Void&gt;() {</span>
+
+<span class="nc" id="L375">                    private final Button btn = new Button(&quot;Delete&quot;);</span>
+
+                    {
+<span class="nc" id="L378">                        btn.setOnAction((ActionEvent event) -&gt; {</span>
+<span class="nc" id="L379">                            UserRow userRow = getTableView().getItems().get(getIndex());</span>
+<span class="nc" id="L380">                            int userId = Integer.parseInt(userRow.getUid());</span>
+<span class="nc" id="L381">                            userService.removeUser(userId);</span>
+<span class="nc" id="L382">                            getTableView().getItems().remove(userRow);</span>
+<span class="nc" id="L383">                        });</span>
+<span class="nc" id="L384">                    }</span>
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+<span class="nc" id="L388">                        super.updateItem(item, empty);</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">                        if (empty) {</span>
+<span class="nc" id="L390">                            setGraphic(null);</span>
+                        } else {
+<span class="nc" id="L392">                            setGraphic(btn);</span>
+                        }
+<span class="nc" id="L394">                    }</span>
+                };
+<span class="nc" id="L396">                return cell;</span>
+            }
+        };
+<span class="nc" id="L399">        deleteUserCol.setCellFactory(cellFactory);</span>
+<span class="nc" id="L400">        ObservableList&lt;UserRow&gt; userUI = FXCollections.observableArrayList(userRows);</span>
+<span class="nc" id="L401">        userTable.setItems(userUI);</span>
+<span class="nc" id="L402">    }</span>
+
+    @FXML
+    public void handleCancelledTransaction(ActionEvent event){
+<span class="nc" id="L406">        List&lt;Transaction&gt; transactionList = transactionService.getAllCancelledTransaction();</span>
+<span class="nc" id="L407">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L408">        head.add(&quot;Transaction ID&quot;);</span>
+<span class="nc" id="L409">        head.add(&quot;User Name&quot;);</span>
+<span class="nc" id="L410">        head.add(&quot;Payment Method&quot;);</span>
+<span class="nc" id="L411">        head.add(&quot;Transaction Status&quot;);</span>
+<span class="nc" id="L412">        head.add(&quot;Transaction Time&quot;);</span>
+<span class="nc" id="L413">        head.add(&quot;Price&quot;);</span>
+<span class="nc" id="L414">        head.add(&quot;Change&quot;);</span>
+<span class="nc" id="L415">        head.add(&quot;Customer Payment&quot;);</span>
+<span class="nc" id="L416">        head.add(&quot;Commodity Details&quot;);</span>
+<span class="nc" id="L417">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        for (Transaction transaction : transactionList) {</span>
+<span class="nc" id="L419">            List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L420">            temp.add(String.valueOf(transaction.getTransactionId()));</span>
+<span class="nc" id="L421">            temp.add(userService.getUserById(transaction.getUserId()).getUsername());</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">            temp.add(transaction.getPayment()== EnvironmentConstant.CARD_PAYMENT ? &quot;CARD&quot;:&quot;CASH&quot;);</span>
+<span class="nc" id="L423">            DateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-mm-dd hh:mm:ss&quot;);</span>
+<span class="nc" id="L424">            String strDate = dateFormat.format(transaction.getTime());</span>
+<span class="nc" id="L425">            temp.add(strDate);</span>
+<span class="nc" id="L426">            temp.add(transaction.getPrice() + &quot;$&quot;);</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">            temp.add(transaction.getChange()==null ? &quot;NULL&quot;:transaction.getChange()+&quot;&quot;);</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">            temp.add(transaction.getAmount()==null ? &quot;NULL&quot;:transaction.getAmount()+&quot;&quot;);</span>
+<span class="nc" id="L429">            List&lt;Order&gt; orders = orderService.getByTransactionId(transaction.getTransactionId());</span>
+<span class="nc" id="L430">            StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">            for (Order order: orders){</span>
+<span class="nc" id="L432">                sb.append(&quot;(&quot;);</span>
+<span class="nc" id="L433">                int commodityId = order.getCommodityId();</span>
+<span class="nc" id="L434">                sb.append(commodityService.getCommodity(commodityId).getName()).append(&quot;, &quot;);</span>
+<span class="nc" id="L435">                sb.append(order.getQuantity()).append(&quot;), &quot;);</span>
+<span class="nc" id="L436">            }</span>
+<span class="nc" id="L437">            temp.add(sb.toString());</span>
+<span class="nc" id="L438">            data.add(temp);</span>
+<span class="nc" id="L439">        }</span>
+<span class="nc" id="L440">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L441">        CSVUtil.createCSV(head, data, directory.getAbsolutePath().concat(&quot;/build/reports/&quot;), &quot;Cancelled_Transaction_Summary&quot;);</span>
+<span class="nc" id="L442">        new AlertUtil(&quot;SUCCESS&quot;,&quot;Summary Created!&quot;).show();</span>
+<span class="nc" id="L443">    }</span>
+
+    @FXML
+    public void handleUserList(ActionEvent event){
+<span class="nc" id="L447">        List&lt;User&gt; userList = userService.getAllUser();</span>
+<span class="nc" id="L448">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L449">        head.add(&quot;User ID&quot;);</span>
+<span class="nc" id="L450">        head.add(&quot;User Name&quot;);</span>
+<span class="nc" id="L451">        head.add(&quot;Role&quot;);</span>
+<span class="nc" id="L452">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">        for (User user: userList) {</span>
+<span class="nc" id="L454">            List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L455">            temp.add(user.getUserId()+&quot;&quot;);</span>
+<span class="nc" id="L456">            temp.add(user.getUsername());</span>
+<span class="nc" id="L457">            int role = user.getRole();</span>
+<span class="nc" id="L458">            temp.add(roleMap.get(role));</span>
+<span class="nc" id="L459">            data.add(temp);</span>
+<span class="nc" id="L460">        }</span>
+<span class="nc" id="L461">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L462">        CSVUtil.createCSV(head, data, directory.getAbsolutePath().concat(&quot;/build/reports/&quot;), &quot;User_List&quot;);</span>
+<span class="nc" id="L463">        new AlertUtil(&quot;SUCCESS&quot;,&quot;Summary Created!&quot;).show();</span>
+<span class="nc" id="L464">    }</span>
+
+    @FXML
+    public void handleLogOut(ActionEvent event) throws IOException {
+<span class="nc" id="L468">        UserSession.logout();</span>
+<span class="nc" id="L469">        Parent parent = FXMLLoader.load(getClass().getResource(&quot;/view/Login.fxml&quot;));</span>
+<span class="nc" id="L470">        Scene scene = new Scene(parent);</span>
+<span class="nc" id="L471">        App.primaryStage.setScene(scene);</span>
+<span class="nc" id="L472">    }</span>
+
+    @FXML
+    public void handleItemSummary(ActionEvent event) throws IOException {
+<span class="nc" id="L476">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+        // details: item name, item code, item category, item quantity and item price
+<span class="nc" id="L478">        head.add(&quot;name&quot;);</span>
+<span class="nc" id="L479">        head.add(&quot;code&quot;);</span>
+<span class="nc" id="L480">        head.add(&quot;category&quot;);</span>
+<span class="nc" id="L481">        head.add(&quot;quantity&quot;);</span>
+<span class="nc" id="L482">        head.add(&quot;price&quot;);</span>
+
+<span class="nc" id="L484">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L485">        List&lt;Commodity&gt; commodities = new CommodityService().getAllCommodities();</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">        for (Commodity c : commodities) {</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">            if (c.getQuantity() != 0) {</span>
+                // If current available
+<span class="nc" id="L489">                List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L490">                temp.add(c.getName());</span>
+<span class="nc" id="L491">                temp.add(c.getCommodityId().toString());</span>
+<span class="nc" id="L492">                temp.add(c.getCategory().toString());</span>
+<span class="nc" id="L493">                temp.add(c.getQuantity().toString());</span>
+<span class="nc" id="L494">                temp.add(c.getPrice().toString());</span>
+<span class="nc" id="L495">                data.add(temp);</span>
+            }
+<span class="nc" id="L497">        }</span>
+<span class="nc" id="L498">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L499">        CSVUtil.createCSV(head,data,directory.getAbsolutePath().concat(&quot;/build/reports/&quot;),&quot;Shopping_Summary&quot;);</span>
+<span class="nc" id="L500">        new AlertUtil(&quot;SUCCESS&quot;,&quot;Summary Created!&quot;).show();</span>
+<span class="nc" id="L501">    }</span>
+
+    @FXML
+    private void checkCommoditySummary(ActionEvent event) throws IOException {
+<span class="nc" id="L505">        List&lt;Commodity&gt; commodityList = commodityService.getAllCommodities();</span>
+<span class="nc" id="L506">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L507">        head.add(&quot;Code&quot;);</span>
+<span class="nc" id="L508">        head.add(&quot;Name&quot;);</span>
+<span class="nc" id="L509">        head.add(&quot;Sold_Number&quot;);</span>
+<span class="nc" id="L510">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L511" title="All 2 branches missed.">        for (Commodity commodity : commodityList){</span>
+<span class="nc" id="L512">            int number  = commodity.getCommodityId();</span>
+<span class="nc" id="L513">            List&lt;String&gt; value = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L514">            String code = Integer.toString(number);</span>
+<span class="nc" id="L515">            String name = commodity.getName();</span>
+<span class="nc" id="L516">            int num = commodity.getSoldNumber();</span>
+<span class="nc" id="L517">            String soldNumber = Integer.toString(num);</span>
+<span class="nc" id="L518">            value.add(code);</span>
+<span class="nc" id="L519">            value.add(name);</span>
+<span class="nc" id="L520">            value.add(soldNumber);</span>
+<span class="nc" id="L521">            data.add(value);</span>
+<span class="nc" id="L522">        }</span>
+<span class="nc" id="L523">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L524">        CSVUtil.createCSV(head, data, directory.getAbsolutePath().concat(&quot;/build/reports/&quot;), &quot;Check_Summary&quot;);</span>
+<span class="nc" id="L525">        new AlertUtil(&quot;SUCCESS&quot;,&quot;Summary Created!&quot;).show();</span>
+<span class="nc" id="L526">    }</span>
+
+    @FXML
+    public void checkTransaction(ActionEvent event) throws IOException{
+<span class="nc" id="L530">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+        // details:  transaction date and time, item sold, amount of money paid, returned change and payment method.
+<span class="nc" id="L532">        head.add(&quot;time&quot;);</span>
+<span class="nc" id="L533">        head.add(&quot;items&quot;);</span>
+<span class="nc" id="L534">        head.add(&quot;amount&quot;);</span>
+<span class="nc" id="L535">        head.add(&quot;change&quot;);</span>
+<span class="nc" id="L536">        head.add(&quot;payment method&quot;);</span>
+
+<span class="nc" id="L538">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L539">        List&lt;Transaction&gt; transactions = new TransactionService().getAllTransaction();</span>
+<span class="nc bnc" id="L540" title="All 2 branches missed.">        for (Transaction t: transactions){</span>
+<span class="nc" id="L541">            List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L542">            temp.add(t.getTime().toString());</span>
+
+<span class="nc" id="L544">            String items = &quot;&quot;;</span>
+<span class="nc" id="L545">            List&lt;Order&gt; orders = new OrderService().getByTransactionId(t.getTransactionId());</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">            for (int i = 0; i &lt; orders.size(); i ++){</span>
+<span class="nc" id="L547">                Commodity c = new CommodityService().getCommodity(orders.get(i).getCommodityId());</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">                if (i == orders.size() - 1){</span>
+<span class="nc" id="L549">                    items = items.concat(c.getName());</span>
+                }else{
+<span class="nc" id="L551">                    items = items.concat(c.getName().concat(&quot;,&quot;));</span>
+                }
+            }
+<span class="nc" id="L554">            temp.add(items);</span>
+
+<span class="nc bnc" id="L556" title="All 2 branches missed.">            if (t.getAmount() == null){</span>
+<span class="nc" id="L557">                temp.add(&quot;Not pay by Cash&quot;);</span>
+            }else{
+<span class="nc" id="L559">                temp.add(t.getAmount().toString());</span>
+            }
+
+<span class="nc bnc" id="L562" title="All 2 branches missed.">            if (t.getChange() == null){</span>
+<span class="nc" id="L563">                temp.add(&quot;Not pay by Cash&quot;);</span>
+            }else{
+<span class="nc" id="L565">                temp.add(t.getChange().toString());</span>
+            }
+
+<span class="nc bnc" id="L568" title="All 2 branches missed.">            String payment = t.getPayment() ? &quot;Card&quot; : &quot;Cash&quot;;</span>
+<span class="nc" id="L569">            temp.add(payment);</span>
+<span class="nc" id="L570">            data.add(temp);</span>
+<span class="nc" id="L571">        }</span>
+
+<span class="nc" id="L573">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L574">        CSVUtil.createCSV(head,data,directory.getAbsolutePath().concat(&quot;/build/reports/&quot;),&quot;Transaction_Summary&quot;);</span>
+<span class="nc" id="L575">    }</span>
+
+    @FXML
+    public void handleChangeSummary(ActionEvent event) {
+<span class="nc" id="L579">        List&lt;Money&gt; moneyList = moneyService.getAllMoney();</span>
+<span class="nc" id="L580">        List&lt;String&gt; head = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L581">        head.add(&quot;Code&quot;);</span>
+<span class="nc" id="L582">        head.add(&quot;Money Value&quot;);</span>
+<span class="nc" id="L583">        head.add(&quot;Quantity Remain&quot;);</span>
+<span class="nc" id="L584">        List&lt;List&lt;String&gt;&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">        for (Money money:moneyList) {</span>
+<span class="nc" id="L586">            List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L587">            temp.add(String.valueOf(money.getMoneyId()));</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            if (money.getValue() &lt; 1){</span>
+<span class="nc" id="L589">                temp.add(money.getValue()+&quot;¢&quot;);</span>
+            } else {
+<span class="nc" id="L591">                temp.add(money.getValue()+&quot;$&quot;);</span>
+            }
+<span class="nc" id="L593">            temp.add(String.valueOf(money.getQuantity()));</span>
+<span class="nc" id="L594">            data.add(temp);</span>
+<span class="nc" id="L595">        }</span>
+<span class="nc" id="L596">        File directory = new File(&quot;&quot;);</span>
+<span class="nc" id="L597">        CSVUtil.createCSV(head, data, directory.getAbsolutePath().concat(&quot;/build/reports/&quot;), &quot;Change_Summary&quot;);</span>
+<span class="nc" id="L598">        new AlertUtil(&quot;SUCCESS&quot;,&quot;Summary Created!&quot;).show();</span>
+<span class="nc" id="L599">    }</span>
+
+    public static class UserRow{
+        private final SimpleStringProperty uid;
+        private final SimpleStringProperty userName;
+        private final SimpleStringProperty role;
+
+<span class="nc" id="L606">        public UserRow(String uid, String userName, String role) {</span>
+<span class="nc" id="L607">            this.uid = new SimpleStringProperty(uid);</span>
+<span class="nc" id="L608">            this.userName = new SimpleStringProperty(userName);</span>
+<span class="nc" id="L609">            this.role = new SimpleStringProperty(role);</span>
+<span class="nc" id="L610">        }</span>
+
+        public String getUid() {
+<span class="nc" id="L613">            return uid.get();</span>
+        }
+
+        public SimpleStringProperty uidProperty() {
+<span class="nc" id="L617">            return uid;</span>
+        }
+
+        public void setUid(String uid) {
+<span class="nc" id="L621">            this.uid.set(uid);</span>
+<span class="nc" id="L622">        }</span>
+
+        public String getUserName() {
+<span class="nc" id="L625">            return userName.get();</span>
+        }
+
+        public SimpleStringProperty userNameProperty() {
+<span class="nc" id="L629">            return userName;</span>
+        }
+
+        public void setUserName(String userName) {
+<span class="nc" id="L633">            this.userName.set(userName);</span>
+<span class="nc" id="L634">        }</span>
+
+        public String getRole() {
+<span class="nc" id="L637">            return role.get();</span>
+        }
+
+        public SimpleStringProperty roleProperty() {
+<span class="nc" id="L641">            return role;</span>
+        }
+
+        public void setRole(String role) {
+<span class="nc" id="L645">            this.role.set(role);</span>
+<span class="nc" id="L646">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

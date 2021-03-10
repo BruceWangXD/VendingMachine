@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">entity</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+<span class="nc" id="L6">public class Transaction implements Serializable {</span>
+    private Integer transactionId;
+
+    private Integer userId;
+
+    private Boolean payment;
+
+    private Integer status;
+
+    private Date time;
+
+    private Double price;
+
+    private Double change;
+
+    private Double amount;
+
+    private static final long serialVersionUID = 1L;
+
+    public Integer getTransactionId() {
+<span class="nc" id="L26">        return transactionId;</span>
+    }
+
+    public void setTransactionId(Integer transactionId) {
+<span class="nc" id="L30">        this.transactionId = transactionId;</span>
+<span class="nc" id="L31">    }</span>
+
+    public Integer getUserId() {
+<span class="nc" id="L34">        return userId;</span>
+    }
+
+    public void setUserId(Integer userId) {
+<span class="nc" id="L38">        this.userId = userId;</span>
+<span class="nc" id="L39">    }</span>
+
+    public Boolean getPayment() {
+<span class="nc" id="L42">        return payment;</span>
+    }
+
+    public void setPayment(Boolean payment) {
+<span class="nc" id="L46">        this.payment = payment;</span>
+<span class="nc" id="L47">    }</span>
+
+    public Integer getStatus() {
+<span class="nc" id="L50">        return status;</span>
+    }
+
+    public void setStatus(Integer status) {
+<span class="nc" id="L54">        this.status = status;</span>
+<span class="nc" id="L55">    }</span>
+
+    public Date getTime() {
+<span class="nc" id="L58">        return time;</span>
+    }
+
+    public void setTime(Date time) {
+<span class="nc" id="L62">        this.time = time;</span>
+<span class="nc" id="L63">    }</span>
+
+    public Double getPrice() {
+<span class="nc" id="L66">        return price;</span>
+    }
+
+    public void setPrice(Double price) {
+<span class="nc" id="L70">        this.price = price;</span>
+<span class="nc" id="L71">    }</span>
+
+    public Double getChange() {
+<span class="nc" id="L74">        return change;</span>
+    }
+
+    public void setChange(Double change) {
+<span class="nc" id="L78">        this.change = change;</span>
+<span class="nc" id="L79">    }</span>
+
+    public Double getAmount() {
+<span class="nc" id="L82">        return amount;</span>
+    }
+
+    public void setAmount(Double amount) {
+<span class="nc" id="L86">        this.amount = amount;</span>
+<span class="nc" id="L87">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L91">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L92">        sb.append(getClass().getSimpleName());</span>
+<span class="nc" id="L93">        sb.append(&quot; [&quot;);</span>
+<span class="nc" id="L94">        sb.append(&quot;Hash = &quot;).append(hashCode());</span>
+<span class="nc" id="L95">        sb.append(&quot;, transactionId=&quot;).append(transactionId);</span>
+<span class="nc" id="L96">        sb.append(&quot;, userId=&quot;).append(userId);</span>
+<span class="nc" id="L97">        sb.append(&quot;, payment=&quot;).append(payment);</span>
+<span class="nc" id="L98">        sb.append(&quot;, status=&quot;).append(status);</span>
+<span class="nc" id="L99">        sb.append(&quot;, time=&quot;).append(time);</span>
+<span class="nc" id="L100">        sb.append(&quot;, price=&quot;).append(price);</span>
+<span class="nc" id="L101">        sb.append(&quot;, change=&quot;).append(change);</span>
+<span class="nc" id="L102">        sb.append(&quot;, amount=&quot;).append(amount);</span>
+<span class="nc" id="L103">        sb.append(&quot;, serialVersionUID=&quot;).append(serialVersionUID);</span>
+<span class="nc" id="L104">        sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L105">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

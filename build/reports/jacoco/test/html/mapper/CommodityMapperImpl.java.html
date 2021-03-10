@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommodityMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">mapper</a> &gt; <span class="el_source">CommodityMapperImpl.java</span></div><h1>CommodityMapperImpl.java</h1><pre class="source lang-java linenums">package mapper;
+
+import entity.Commodity;
+import entity.Transaction;
+import org.apache.ibatis.session.SqlSession;
+import util.SQLSessionUtil;
+
+import java.util.List;
+
+<span class="nc" id="L10">public class CommodityMapperImpl implements CommodityMapper{</span>
+    @Override
+    public int deleteByPrimaryKey(Integer commodityId) {
+<span class="nc" id="L13">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L14">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L15">        int rs = commodityMapper.deleteByPrimaryKey(commodityId);</span>
+<span class="nc" id="L16">        session.commit(true);</span>
+<span class="nc" id="L17">        session.close();</span>
+<span class="nc" id="L18">        return rs;</span>
+    }
+
+    @Override
+    public int insert(Commodity record) {
+        //please use insertSelective
+<span class="nc" id="L24">        return 0;</span>
+    }
+
+    @Override
+    public int insertSelective(Commodity record) {
+<span class="nc" id="L29">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L30">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L31">        int rs = commodityMapper.insertSelective(record);</span>
+<span class="nc" id="L32">        session.commit(true);</span>
+<span class="nc" id="L33">        session.close();</span>
+<span class="nc" id="L34">        return rs;</span>
+    }
+
+    @Override
+    public List&lt;Commodity&gt; selectAll() {
+<span class="nc" id="L39">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L40">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L41">        List&lt;Commodity&gt; rs = commodityMapper.selectAll();</span>
+<span class="nc" id="L42">        session.commit();</span>
+<span class="nc" id="L43">        session.close();</span>
+<span class="nc" id="L44">        return rs;</span>
+    }
+
+    @Override
+    public Commodity selectByPrimaryKey(Integer commodityId) {
+<span class="nc" id="L49">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L50">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L51">        Commodity commodity = commodityMapper.selectByPrimaryKey(commodityId);</span>
+<span class="nc" id="L52">        session.commit();</span>
+<span class="nc" id="L53">        session.close();</span>
+<span class="nc" id="L54">        return commodity;</span>
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(Commodity record) {
+<span class="nc" id="L59">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L60">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L61">        int rs = commodityMapper.updateByPrimaryKeySelective(record);</span>
+<span class="nc" id="L62">        session.commit(true);</span>
+<span class="nc" id="L63">        session.close();</span>
+<span class="nc" id="L64">        return rs;</span>
+    }
+
+    @Override
+    public int updateByPrimaryKey(Commodity record) {
+<span class="nc" id="L69">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L70">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L71">        int rs = commodityMapper.updateByPrimaryKey(record);</span>
+<span class="nc" id="L72">        session.commit(true);</span>
+<span class="nc" id="L73">        session.close();</span>
+<span class="nc" id="L74">        return rs;</span>
+    }
+
+    @Override
+    public Integer selectQuantityByCommodity(Integer commodityId){
+<span class="nc" id="L79">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L80">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L81">        int quantity = commodityMapper.selectQuantityByCommodity(commodityId);</span>
+<span class="nc" id="L82">        session.commit();</span>
+<span class="nc" id="L83">        session.close();</span>
+<span class="nc" id="L84">        return quantity;</span>
+    }
+
+    @Override
+    public Integer updateQuantityOfCommodity(Integer commodityId, int update){
+<span class="nc" id="L89">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L90">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L91">        int rs = commodityMapper.updateQuantityOfCommodity(commodityId,update);</span>
+<span class="nc" id="L92">        session.commit();</span>
+<span class="nc" id="L93">        session.close();</span>
+<span class="nc" id="L94">        return rs;</span>
+    }
+
+    @Override
+    public List&lt;Commodity&gt; selectByCategoryID(Integer categoryId) {
+<span class="nc" id="L99">        SqlSession session = SQLSessionUtil.openSqlSession();</span>
+<span class="nc" id="L100">        CommodityMapper commodityMapper = session.getMapper(CommodityMapper.class);</span>
+<span class="nc" id="L101">        List&lt;Commodity&gt; rs = commodityMapper.selectByCategoryID(categoryId);</span>
+<span class="nc" id="L102">        session.commit();</span>
+<span class="nc" id="L103">        session.close();</span>
+<span class="nc" id="L104">        return rs;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

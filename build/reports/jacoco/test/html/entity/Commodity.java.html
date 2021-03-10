@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Commodity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">VendingMachine</a> &gt; <a href="index.source.html" class="el_package">entity</a> &gt; <span class="el_source">Commodity.java</span></div><h1>Commodity.java</h1><pre class="source lang-java linenums">package entity;
+
+import java.io.Serializable;
+
+<span class="nc" id="L5">public class Commodity implements Serializable {</span>
+    private Integer commodityId;
+
+    private String name;
+
+    private Double price;
+
+    private Integer soldNumber;
+
+    private Integer quantity;
+
+    private Integer category;
+
+    private String picAddress;
+
+    private static final long serialVersionUID = 1L;
+
+    public Integer getCommodityId() {
+<span class="nc" id="L23">        return commodityId;</span>
+    }
+
+    public void setCommodityId(Integer commodityId) {
+<span class="nc" id="L27">        this.commodityId = commodityId;</span>
+<span class="nc" id="L28">    }</span>
+
+    public String getName() {
+<span class="nc" id="L31">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        this.name = name == null ? null : name.trim();</span>
+<span class="nc" id="L36">    }</span>
+
+    public Double getPrice() {
+<span class="nc" id="L39">        return price;</span>
+    }
+
+    public void setPrice(Double price) {
+<span class="nc" id="L43">        this.price = price;</span>
+<span class="nc" id="L44">    }</span>
+
+    public Integer getSoldNumber() {
+<span class="nc" id="L47">        return soldNumber;</span>
+    }
+
+    public void setSoldNumber(Integer soldNumber) {
+<span class="nc" id="L51">        this.soldNumber = soldNumber;</span>
+<span class="nc" id="L52">    }</span>
+
+    public Integer getQuantity() {
+<span class="nc" id="L55">        return quantity;</span>
+    }
+
+    public void setQuantity(Integer quantity) {
+<span class="nc" id="L59">        this.quantity = quantity;</span>
+<span class="nc" id="L60">    }</span>
+
+    public Integer getCategory() {
+<span class="nc" id="L63">        return category;</span>
+    }
+
+    public void setCategory(Integer category) {
+<span class="nc" id="L67">        this.category = category;</span>
+<span class="nc" id="L68">    }</span>
+
+    public String getPicAddress() {
+<span class="nc" id="L71">        return picAddress;</span>
+    }
+
+    public void setPicAddress(String picAddress) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        this.picAddress = picAddress == null ? null : picAddress.trim();</span>
+<span class="nc" id="L76">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L80">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L81">        sb.append(getClass().getSimpleName());</span>
+<span class="nc" id="L82">        sb.append(&quot; [&quot;);</span>
+<span class="nc" id="L83">        sb.append(&quot;Hash = &quot;).append(hashCode());</span>
+<span class="nc" id="L84">        sb.append(&quot;, commodityId=&quot;).append(commodityId);</span>
+<span class="nc" id="L85">        sb.append(&quot;, name=&quot;).append(name);</span>
+<span class="nc" id="L86">        sb.append(&quot;, price=&quot;).append(price);</span>
+<span class="nc" id="L87">        sb.append(&quot;, soldNumber=&quot;).append(soldNumber);</span>
+<span class="nc" id="L88">        sb.append(&quot;, quantity=&quot;).append(quantity);</span>
+<span class="nc" id="L89">        sb.append(&quot;, category=&quot;).append(category);</span>
+<span class="nc" id="L90">        sb.append(&quot;, picAddress=&quot;).append(picAddress);</span>
+<span class="nc" id="L91">        sb.append(&quot;, serialVersionUID=&quot;).append(serialVersionUID);</span>
+<span class="nc" id="L92">        sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L93">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
